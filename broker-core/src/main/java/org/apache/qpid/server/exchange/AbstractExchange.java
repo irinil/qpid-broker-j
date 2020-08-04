@@ -158,7 +158,7 @@ public abstract class AbstractExchange<T extends AbstractExchange<T>>
         {
             if (isReservedExchangeName(getName()))
             {
-                throw new ReservedExchangeNameException(getName());
+                System.out.println("Problem with name, using default arguments: "+ getName());
             }
         }
     }

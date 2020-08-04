@@ -443,18 +443,6 @@ public abstract class AbstractAMQPConnection<C extends AbstractAMQPConnection<C,
                 task.performAction((C)this);
             }
         }
-        else
-        {
-            runAsSubject(new PrivilegedAction<Object>()
-            {
-                @Override
-                public Object run()
-                {
-                    performDeleteTasks();
-                    return null;
-                }
-            });
-        }
     }
 
     @Override
