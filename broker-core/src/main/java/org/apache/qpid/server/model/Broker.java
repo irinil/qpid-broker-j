@@ -249,18 +249,8 @@ public interface Broker<X extends Broker<X>> extends ConfiguredObject<X>, EventL
     @DerivedAttribute(description = "Maximum direct memory size which can be consumed by broker")
     long getMaximumDirectMemorySize();
 
-    @DerivedAttribute(description = "JVM arguments specified on startup")
-    List<String> getJvmArguments();
-
     @DerivedAttribute(description = "URL to broker documentation")
     String getDocumentationUrl();
-
-    @SuppressWarnings("unused")
-    @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
-                      units = StatisticUnit.COUNT,
-                      label = "Live threads",
-                      description = "Number of live threads")
-    int getNumberOfLiveThreads();
 
     @SuppressWarnings("unused")
     @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
@@ -268,27 +258,6 @@ public interface Broker<X extends Broker<X>> extends ConfiguredObject<X>, EventL
                       label = "Used Heap Memory Size",
                       description = "Size of used heap memory")
     long getUsedHeapMemorySize();
-
-    @SuppressWarnings("unused")
-    @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
-                      units = StatisticUnit.BYTES,
-                      label = "Used Direct Memory Size",
-                      description = "Size of used direct memory")
-    long getUsedDirectMemorySize();
-
-    @SuppressWarnings("unused")
-    @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
-                      units = StatisticUnit.BYTES,
-                      label = "Direct Memory Total Capacity",
-                      description = "Total capacity of direct memory allocated for the Broker process")
-    long getDirectMemoryTotalCapacity();
-
-    @SuppressWarnings("unused")
-    @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
-                      units = StatisticUnit.COUNT,
-                      label = "Number Of Object Pending Finalization",
-                      description = "Number of objects pending finalization")
-    int getNumberOfObjectsPendingFinalization();
 
     @SuppressWarnings("unused")
     @ManagedStatistic(statisticType = StatisticType.POINT_IN_TIME,
@@ -321,21 +290,6 @@ public interface Broker<X extends Broker<X>> extends ConfiguredObject<X>, EventL
             description = "Initiates garbage collection",
             changesConfiguredObjectState = false)
     void performGC();
-
-    @ManagedOperation(nonModifying = true,
-                      description = "Collects thread stack traces and dead locks. Dumps stack traces into logs if requested",
-            changesConfiguredObjectState = false)
-    Content getThreadStackTraces(@Param(name="appendToLog",
-                                        defaultValue = "false",
-                                        description = "If true, appends stack traces into logs")
-                                 boolean appendToLog);
-
-    @ManagedOperation(nonModifying = true,
-            description = "Collects thread stack traces for the threads with names containing matching characters for given regular expression",
-            changesConfiguredObjectState = false)
-    Content findThreadStackTraces(@Param(name="threadNameFindExpression",
-                                        description = "Regular expression to find threads with names containing matching characters")
-                                 String threadNameFindExpression);
 
     @ManagedOperation(nonModifying = true,
             description = "Returns the principal of the currently authenticated user",

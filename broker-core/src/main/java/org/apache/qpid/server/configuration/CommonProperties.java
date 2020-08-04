@@ -238,7 +238,11 @@ public class CommonProperties
     {
         final Manifest emptyManifest = new Manifest();
         String className = clazz.getSimpleName() + ".class";
+        URL url = clazz.getResource(className);
+        if(url == null)
+            return emptyManifest;
         String classPath = clazz.getResource(className).toString();
+
         if (!classPath.startsWith("jar"))
         {
             return emptyManifest;

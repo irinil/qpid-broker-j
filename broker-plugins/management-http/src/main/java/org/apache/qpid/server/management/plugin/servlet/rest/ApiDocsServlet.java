@@ -364,19 +364,7 @@ public class ApiDocsServlet extends AbstractServlet
         writer.println("<a name=\"types\"><h2>Statistics</h2></a>");
         writer.println("<h2>Common Statistics</h2>");
 
-        writeStatisticsTable(writer, model.getTypeRegistry().getStatistics(configuredClass));
 
-        for(Class<? extends ConfiguredObject> type : types)
-        {
-            String typeName = getTypeName(type, model);
-            Collection<ConfiguredObjectStatistic<?, ?>> typeSpecificStatistics =
-                    model.getTypeRegistry().getTypeSpecificStatistics(type);
-            if(!typeSpecificStatistics.isEmpty())
-            {
-                writer.println("<h2><span class=\"type\">"+typeName+"</span> Specific Statistics</h2>");
-                writeStatisticsTable(writer, typeSpecificStatistics);
-            }
-        }
     }
 
     private void writeStatisticsTable(final PrintWriter writer,

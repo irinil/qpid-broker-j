@@ -198,9 +198,6 @@ public class ConfiguredObjectTypeRegistry
             _typeSpecificAttributes =
             Collections.synchronizedMap(new HashMap<Class<? extends ConfiguredObject>, Collection<ConfiguredObjectAttribute<?, ?>>>());
 
-    private final Map<Class<? extends ConfiguredObject>, Collection<ConfiguredObjectStatistic<?, ?>>>
-            _typeSpecificStatistics =
-            Collections.synchronizedMap(new HashMap<Class<? extends ConfiguredObject>, Collection<ConfiguredObjectStatistic<?, ?>>>());
 
     private final Map<Class<? extends ConfiguredObject>, Map<State, Map<State, Method>>> _stateChangeMethods =
             Collections.synchronizedMap(new HashMap<Class<? extends ConfiguredObject>, Map<State, Map<State, Method>>>());
@@ -295,7 +292,6 @@ public class ConfiguredObjectTypeRegistry
             {
                 typesForCategory.add(categoryClass);
                 _typeSpecificAttributes.put(categoryClass, Collections.emptySet());
-                _typeSpecificStatistics.put(categoryClass, Collections.emptySet());
             }
             else
             {
@@ -329,7 +325,6 @@ public class ConfiguredObjectTypeRegistry
                             statistics.add(statistic);
                         }
                     }
-                    _typeSpecificStatistics.put(typeClass, statistics);
                 }
             }
         }
@@ -605,19 +600,6 @@ public class ConfiguredObjectTypeRegistry
                                                           : typeAttrs);
     }
 
-    public Collection<ConfiguredObjectStatistic<?, ?>> getTypeSpecificStatistics(final Class<? extends ConfiguredObject> clazz)
-    {
-        Class<? extends ConfiguredObject> typeClass = getTypeClass(clazz);
-        if (typeClass == null)
-        {
-            throw new IllegalArgumentException("Cannot locate ManagedObject information for " + clazz.getName());
-        }
-        Collection<ConfiguredObjectStatistic<?, ?>> typeAttrs = _typeSpecificStatistics.get(typeClass);
-        return Collections.unmodifiableCollection(typeAttrs == null
-                                                          ? Collections.emptySet()
-                                                          : typeAttrs);
-    }
-
     public static String getType(final Class<? extends ConfiguredObject> clazz)
     {
         String type = getActualType(clazz);
@@ -813,6 +795,7 @@ public class ConfiguredObjectTypeRegistry
             processMethod(clazz, attributeSet, statisticSet, operationsSet, method);
         }
 
+        if(_attributeInjectors!=null){
         for (ConfiguredObjectAttributeInjector injector : _attributeInjectors)
         {
             if (injector.getTypeValidator().appliesToType((Class<? extends ConfiguredObject<?>>) clazz))
@@ -841,6 +824,7 @@ public class ConfiguredObjectTypeRegistry
                     }
                 }
             }
+        }
         }
     }
 
@@ -1096,22 +1080,18 @@ public class ConfiguredObjectTypeRegistry
                                     final Map<State, Map<State, Method>> map)
     {
         Map<State, Map<State, Method>> parentMap = _stateChangeMethods.get(parent);
-        for (Map.Entry<State, Map<State, Method>> parentEntry : parentMap.entrySet())
-        {
-            if (map.containsKey(parentEntry.getKey()))
-            {
-                Map<State, Method> methodMap = map.get(parentEntry.getKey());
-                for (Map.Entry<State, Method> methodEntry : parentEntry.getValue().entrySet())
-                {
-                    if (!methodMap.containsKey(methodEntry.getKey()))
-                    {
-                        methodMap.put(methodEntry.getKey(), methodEntry.getValue());
+        if(parentMap!=null) {
+            for (Map.Entry<State, Map<State, Method>> parentEntry : parentMap.entrySet()) {
+                if (map.containsKey(parentEntry.getKey())) {
+                    Map<State, Method> methodMap = map.get(parentEntry.getKey());
+                    for (Map.Entry<State, Method> methodEntry : parentEntry.getValue().entrySet()) {
+                        if (!methodMap.containsKey(methodEntry.getKey())) {
+                            methodMap.put(methodEntry.getKey(), methodEntry.getValue());
+                        }
                     }
+                } else {
+                    map.put(parentEntry.getKey(), new HashMap<State, Method>(parentEntry.getValue()));
                 }
-            }
-            else
-            {
-                map.put(parentEntry.getKey(), new HashMap<State, Method>(parentEntry.getValue()));
             }
         }
     }

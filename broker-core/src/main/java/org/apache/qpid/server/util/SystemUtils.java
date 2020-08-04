@@ -20,8 +20,6 @@
  */
 package org.apache.qpid.server.util;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 
 /**
  * SystemUtils provides some simple helper methods for working with the current
@@ -49,18 +47,9 @@ public class SystemUtils
 
     static
     {
-        RuntimeMXBean rtb = ManagementFactory.getRuntimeMXBean();
-        String processName = rtb.getName();
-        int atIndex;
-        if(processName != null && (atIndex = processName.indexOf('@')) > 0)
-        {
-            _osPid = processName.substring(0, atIndex);
-            _osPidInt = parseInt(_osPid, -1);
-        }
-        else
-        {
+
             _osPid = null;
-        }
+
     }
 
 

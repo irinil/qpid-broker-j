@@ -68,8 +68,6 @@ public interface SimpleLDAPAuthenticationManager<X extends SimpleLDAPAuthenticat
     @ManagedAttribute( description = "Bind without search")
     boolean isBindWithoutSearch();
 
-    @ManagedContextDefault( name = "ldap.context.factory")
-    String DEFAULT_LDAP_CONTEXT_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 
     @ManagedAttribute( description = "LDAP context factory", defaultValue = "${ldap.context.factory}")
     String getLdapContextFactory();
