@@ -177,6 +177,6 @@ public class ConnectionPrincipalStatisticsRegistryImpl implements ConnectionPrin
 
     private long getConnectionFrequencyPeriodMillis()
     {
-        return _settings.getConnectionFrequencyPeriod().toMillis();
+        return _settings.getConnectionFrequencyPeriod().getMillis();
     }
 }

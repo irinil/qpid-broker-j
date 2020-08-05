@@ -21,8 +21,8 @@
 
 package org.apache.qpid.server.stats;
 
-import java.time.Duration;
-import java.time.Instant;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class FormattingStatisticsResolver implements Resolver
                         statisticValue = toIEC80000BinaryPrefixedValue(value);
                         break;
                     case DURATION:
-                        statisticValue = value < 0 ? "-" : Duration.ofMillis(value);
+                        statisticValue = value < 0 ? "-" : Duration.millis(value);
                         break;
                     case DATETIME:
                         statisticValue = value < 0 ? "-" : Instant.ofEpochMilli(value).toString();

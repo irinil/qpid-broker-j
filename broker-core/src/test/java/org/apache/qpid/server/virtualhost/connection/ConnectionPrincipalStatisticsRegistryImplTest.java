@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.security.Principal;
-import java.time.Duration;
+import org.joda.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 
@@ -42,7 +42,7 @@ import org.apache.qpid.test.utils.UnitTestBase;
 
 public class ConnectionPrincipalStatisticsRegistryImplTest extends UnitTestBase
 {
-    private static final Duration CONNECTION_FREQUENCY_PERIOD = Duration.ofMillis(5000);
+    private static final Duration CONNECTION_FREQUENCY_PERIOD = Duration.millis(5000);
     private ConnectionPrincipalStatisticsRegistryImpl _statisticsRegistry;
     private AuthenticatedPrincipal _authorizedPrincipal;
     private ConnectionStatisticsRegistrySettings _settings;
@@ -93,8 +93,8 @@ public class ConnectionPrincipalStatisticsRegistryImplTest extends UnitTestBase
         _statisticsRegistry.reevaluateConnectionStatistics();
         assertThat(_statisticsRegistry.getConnectionFrequency(_authorizedPrincipal), is(equalTo(1)));
 
-        when(_settings.getConnectionFrequencyPeriod()).thenReturn(Duration.ofMillis(1));
-        Thread.sleep(_settings.getConnectionFrequencyPeriod().toMillis() + 1);
+        when(_settings.getConnectionFrequencyPeriod()).thenReturn(Duration.millis(1));
+        Thread.sleep(_settings.getConnectionFrequencyPeriod().getMillis() + 1);
 
         _statisticsRegistry.reevaluateConnectionStatistics();
         assertThat(_statisticsRegistry.getConnectionCount(_authorizedPrincipal), is(equalTo(1)));
@@ -110,8 +110,8 @@ public class ConnectionPrincipalStatisticsRegistryImplTest extends UnitTestBase
         assertThat(_statisticsRegistry.getConnectionFrequency(_authorizedPrincipal), is(equalTo(1)));
         assertThat(_statisticsRegistry.getConnectionCount(_authorizedPrincipal), is(equalTo(1)));
 
-        when(_settings.getConnectionFrequencyPeriod()).thenReturn(Duration.ofMillis(1));
-        Thread.sleep(_settings.getConnectionFrequencyPeriod().toMillis() + 1);
+        when(_settings.getConnectionFrequencyPeriod()).thenReturn(Duration.millis(1));
+        Thread.sleep(_settings.getConnectionFrequencyPeriod().getMillis() + 1);
 
         final AMQPConnection connection2 = mockConnection();
         _statisticsRegistry.connectionOpened(connection2);

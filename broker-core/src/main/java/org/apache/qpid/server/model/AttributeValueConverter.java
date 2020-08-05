@@ -35,16 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.chrono.IsoChronology;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalAccessor;
+
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.chrono.ISOChronology;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,20 +74,11 @@ abstract class AttributeValueConverter<T>
     };
 
     private static final DateTimeFormatter ISO_DATE_TIME_FORMAT =  new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(DateTimeFormatter.ISO_LOCAL_DATE)
-                .optionalStart()
+                .append(DateTimeFormat.forPattern("yyyy-MM-dd"))
                 .appendLiteral('T')
-                .append(DateTimeFormatter.ISO_LOCAL_TIME)
-                .optionalStart()
-                .appendOffsetId()
-                .optionalStart()
-                .appendLiteral('[')
-                .parseCaseSensitive()
-                .appendZoneRegionId()
-                .appendLiteral(']')
+                .append(DateTimeFormat.forPattern("h:mm a"))
                 .toFormatter()
-                .withChronology(IsoChronology.INSTANCE);
+                .withChronology(ISOChronology.getInstance());
 
     static final AttributeValueConverter<Object> OBJECT_CONVERTER = new AttributeValueConverter<Object>()
     {
@@ -549,10 +535,9 @@ abstract class AttributeValueConverter<T>
                 {
                     try
                     {
-                        return ISO_DATE_TIME_FORMAT.parse(interpolated)
-                                .query(this::convertToDate);
+                        return ISO_DATE_TIME_FORMAT.parseDateTime(interpolated).toDate();
                     }
-                    catch (DateTimeParseException e1)
+                    catch (Exception e1)
                     {
                         throw new IllegalArgumentException("Cannot convert string '" + interpolated + "' to a Date."
                                                            + " It is neither a ISO-8601 date or date time nor a string"
@@ -570,17 +555,6 @@ abstract class AttributeValueConverter<T>
             }
         }
 
-        private Date convertToDate(TemporalAccessor t)
-        {
-            if(!t.isSupported(ChronoField.INSTANT_SECONDS))
-            {
-                t = LocalDateTime.of(LocalDate.from(t), LocalTime.MIN).atOffset(ZoneOffset.UTC);
-            }
-            return new Date((t.getLong(ChronoField.INSTANT_SECONDS) * 1000L)
-                             + t.getLong(ChronoField.MILLI_OF_SECOND));
-
-
-        }
     };
 
     public static final AttributeValueConverter<Principal> PRINCIPAL_CONVERTER = new AttributeValueConverter<Principal>()

@@ -38,7 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessControlContext;
 import java.security.Principal;
 import java.security.PrivilegedAction;
-import java.time.Duration;
+import org.joda.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2762,7 +2762,7 @@ public abstract class AbstractVirtualHost<X extends AbstractVirtualHost<X>> exte
     private void initialiseConnectionPrincipalStatisticsRegistry()
     {
         final long connectionFrequencyPeriodMillis = getContextValue(Long.class, CONNECTION_FREQUENCY_PERIOD);
-        final Duration connectionFrequencyPeriod = Duration.ofMillis(connectionFrequencyPeriodMillis);
+        final Duration connectionFrequencyPeriod = Duration.millis(connectionFrequencyPeriodMillis);
         final ConnectionPrincipalStatisticsRegistryImpl connectionStatisticsRegistry =
                 new ConnectionPrincipalStatisticsRegistryImpl(() -> connectionFrequencyPeriod);
         HouseKeepingTask task = null;
