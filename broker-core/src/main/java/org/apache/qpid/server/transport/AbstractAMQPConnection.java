@@ -533,20 +533,15 @@ public abstract class AbstractAMQPConnection<C extends AbstractAMQPConnection<C,
             final SettableFuture<Void> future = SettableFuture.create();
 
             addAsyncTask(
-                    new Action<Object>()
-                    {
-                        @Override
-                        public void performAction(final Object object)
+                    (Action<Object>) object -> {
+                        try
                         {
-                            try
-                            {
-                                task.run();
-                                future.set(null);
-                            }
-                            catch (RuntimeException e)
-                            {
-                                future.setException(e);
-                            }
+                            task.run();
+                            future.set(null);
+                        }
+                        catch (RuntimeException e)
+                        {
+                            future.setException(e);
                         }
                     });
             return future;
@@ -747,50 +742,40 @@ public abstract class AbstractAMQPConnection<C extends AbstractAMQPConnection<C,
 
     private void logConnectionOpen()
     {
-        runAsSubject(new PrivilegedAction<Object>()
-        {
-            @Override
-            public Object run()
+        runAsSubject(() -> {
+            SocketAddress remoteAddress = _network.getRemoteAddress();
+            final String remoteAddressStr;
+            if (remoteAddress instanceof InetSocketAddress)
             {
-                SocketAddress localAddress = _network.getLocalAddress();
-                final String localAddressStr;
-                if (localAddress instanceof InetSocketAddress)
-                {
-                    InetSocketAddress inetAddress = (InetSocketAddress) localAddress;
-                    localAddressStr = inetAddress.getAddress().getHostAddress() + ":" + inetAddress.getPort();
-                }
-                else
-                {
-                    localAddressStr = localAddress.toString();
-                }
-                getEventLogger().message(ConnectionMessages.OPEN(getPort().getName(),
-                                                                 localAddressStr,
-                                                                 getProtocol().getProtocolVersion(),
-                                                                 getClientId(),
-                                                                 getClientVersion(),
-                                                                 getClientProduct(),
-                                                                 getTransport().isSecure(),
-                                                                 getClientId() != null,
-                                                                 getClientVersion() != null,
-                                                                 getClientProduct() != null));
-                return null;
+                InetSocketAddress inetAddress = (InetSocketAddress) remoteAddress;
+                remoteAddressStr = inetAddress.getAddress().getHostAddress() + ":" + inetAddress.getPort();
             }
+            else
+            {
+                remoteAddressStr = remoteAddress.toString();
+            }
+            getEventLogger().message(ConnectionMessages.OPEN(getPort().getName(),
+                                                             remoteAddressStr,
+                                                             getProtocol().getProtocolVersion(),
+                                                             getClientId(),
+                                                             getClientVersion(),
+                                                             getClientProduct(),
+                                                             getTransport().isSecure(),
+                                                             getClientId() != null,
+                                                             getClientVersion() != null,
+                                                             getClientProduct() != null));
+            return null;
         });
     }
 
     private void logConnectionClose()
     {
-        runAsSubject(new PrivilegedAction<Void>()
-        {
-            @Override
-            public Void run()
-            {
-                String closeCause = getCloseCause();
-                getEventLogger().message(isOrderlyClose()
-                                                 ? ConnectionMessages.CLOSE(closeCause, closeCause != null)
-                                                 : ConnectionMessages.DROPPED_CONNECTION());
-                return null;
-            }
+        runAsSubject((PrivilegedAction<Void>) () -> {
+            String closeCause = getCloseCause();
+            getEventLogger().message(isOrderlyClose()
+                                             ? ConnectionMessages.CLOSE(closeCause, closeCause != null)
+                                             : ConnectionMessages.DROPPED_CONNECTION());
+            return null;
         });
     }
 
